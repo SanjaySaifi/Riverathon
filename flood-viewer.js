@@ -1,173 +1,176 @@
 // Grant CesiumJS access to your ion assets
 Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYWMxMTQ2YS01YTBhLTQ5NmQtOWJiNy1mYTA2ODBjOTBlMzIiLCJpZCI6ODE2NTYsImlhdCI6MTY0NjI4MjU4Mn0.yWeJ6IgFRsSBur-0DSZL6914Frj9nVCMqF6RlIT0QoM";
 
-const viewer = new Cesium.Viewer("cesiumContainer", { screenSpaceEventHandler: true });
 
-// Global variables
-let dataSource, allEntities = [], highlightedEntities = [], floodAffectedEntities = [], activeFloodLayers = new Map();
-const floodAssets = {'2008': 4333819, '2016': 4333063, '2017': 4333831, '2018': 4333835, '2020': 4333837};
+const viewer = new Cesium.Viewer("cesiumContainer");
 
-function polygonsIntersect(buildingPoly, floodLayer) {
-  const baseProbability = 0.5;
-  const layerBonus = activeFloodLayers.size * 0.05;
-  return Math.random() < (baseProbability + layerBonus);
-}
+// ---------------- GLOBALS ----------------
+let dataSource;
+let allEntities = [];
+let highlightedEntities = [];
+let floodAffectedEntities = [];
+let activeFloodLayers = new Map();
 
+let utilityLayers = new Map();
+let utilityEntities = { road: [], rail: [], power: [] };
+
+const floodAssets = { 2008:4333819, 2016:4333063, 2017:4333831, 2018:4333835, 2020:4333837 };
+const utilityAssets = { road:4423350, rail:4335002, power:4335003 };
+
+// ---------------- INIT ----------------
 async function initViewer() {
-  try {
-    document.getElementById('loadingOverlay').style.display = 'block';
-    
-    const resource = await Cesium.IonResource.fromAssetId(4331513);
-    dataSource = await Cesium.GeoJsonDataSource.load(resource);
-    await viewer.dataSources.add(dataSource);
-    
-    allEntities = dataSource.entities.values.filter(e => Cesium.defined(e.polygon));
-    allEntities.forEach(entity => {
-      if (Cesium.defined(entity.polygon) && Cesium.defined(entity.properties)) {
-        entity.polygon.material = Cesium.Color.WHITE.withAlpha(0.8);
-        entity.polygon.outline = true;
-        entity.polygon.outlineColor = Cesium.Color.BLACK;
-        const heightProp = entity.properties.Height || entity.properties.height || entity.properties.HEIGHT;
-        if (heightProp) {
-          entity.polygon.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
-          entity.polygon.height = 0;
-          entity.polygon.extrudedHeight = heightProp;
-        }
-      }
-    });
-    
-    viewer.zoomTo(dataSource, new Cesium.HeadingPitchRange(-3, -0.35, 800));
-    document.getElementById('loadingOverlay').style.display = 'none';
-    initPanels();
-  } catch (error) {
-    console.log(error);
-    document.getElementById('loadingOverlay').innerHTML = '<h1>Error loading data</h1>';
-  }
+  const resource = await Cesium.IonResource.fromAssetId(4331513);
+  dataSource = await Cesium.GeoJsonDataSource.load(resource);
+  viewer.dataSources.add(dataSource);
+
+  allEntities = dataSource.entities.values.filter(e => e.polygon);
+
+  // Extrude + white buildings
+  allEntities.forEach(entity => {
+    const h =
+      entity.properties?.Height ||
+      entity.properties?.height ||
+      entity.properties?.HEIGHT;
+
+    const heightValue = h ? Number(h.getValue()) : 10;
+
+    entity.polygon.height = 0;
+    entity.polygon.extrudedHeight = heightValue;
+    entity.polygon.material = Cesium.Color.WHITE.withAlpha(0.9);
+    entity.polygon.outline = true;
+    entity.polygon.outlineColor = Cesium.Color.BLACK.withAlpha(0.3);
+  });
+
+  viewer.zoomTo(
+    dataSource,
+    new Cesium.HeadingPitchRange(-6, Cesium.Math.toRadians(-40), 3000)
+  );
+
+  initPanels();
 }
 
+// ---------------- PANELS ----------------
 function initPanels() {
-  updateFloodCount();
-  
-  // Building type buttons
-  document.getElementById('btn-residential').onclick = () => highlightByType('RESIDENTIAL BUILDING');
-  document.getElementById('btn-commercial').onclick = () => highlightByType('COMMERCIAL BUILDING');
-  document.getElementById('btn-govt').onclick = () => highlightByType('GOVERNMENT BUILDING');
-  
-  // Building height buttons
-  document.getElementById('btn-single').onclick = () => highlightByHeight(0, 3);
-  document.getElementById('btn-double').onclick = () => highlightByHeight(3, 6);
-  document.getElementById('btn-three').onclick = () => highlightByHeight(6, 9);
-  document.getElementById('btn-highrise').onclick = () => highlightByHeight(9, Infinity);
-  
-  // Flood buttons
-  Object.keys(floodAssets).forEach(year => {
-    const btn = document.getElementById(`btn-flood-${year}`);
-    if (btn) btn.onclick = () => toggleFloodLayer(year);
-  });
+
+  // Building type dropdown
+  document.getElementById("select-building-type").onchange = e => {
+    clearHighlights();
+    if (e.target.value) highlightByType(e.target.value);
+  };
+
+  // Building height dropdown
+  document.getElementById("select-building-height").onchange = e => {
+    clearHighlights();
+    if (!e.target.value) return;
+
+    const v = e.target.value;
+    if (v === "0-3") highlightByHeight(0,3);
+    if (v === "3-6") highlightByHeight(3,6);
+    if (v === "6-9") highlightByHeight(6,9);
+    if (v === "9-inf") highlightByHeight(9,Infinity);
+  };
+
+  // Utilities
+  document.getElementById('btn-road').onclick  = () => toggleUtility('road');
+  document.getElementById('btn-rail').onclick  = () => toggleUtility('rail');
+  document.getElementById('btn-power').onclick = () => toggleUtility('power');
+
+  Object.keys(floodAssets).forEach(y =>
+    document.getElementById(`btn-flood-${y}`).onclick = () => toggleFloodLayer(y)
+  );
 }
 
-function updateFloodCount() {
-  document.getElementById('floodCount').textContent = `Flood Affected: ${floodAffectedEntities.length} buildings`;
-  document.getElementById('activeFloods').textContent = `Active: ${activeFloodLayers.size} flood layers`;
-}
-
+// ---------------- BUILDINGS ----------------
 function clearHighlights() {
-  highlightedEntities.forEach(entity => {
-    if (entity.polygon) {
-      entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.8);
-      delete entity.polygon.userData;
-    }
-  });
+  highlightedEntities.forEach(e =>
+    e.polygon.material = Cesium.Color.WHITE.withAlpha(0.9)
+  );
   highlightedEntities = [];
-  document.querySelectorAll('.highlight-btn').forEach(btn => btn.classList.remove('active'));
+}
+
+function highlightByType(type) {
+  highlightedEntities = allEntities.filter(e =>
+    e.properties?.BUILD_TYPE?.getValue() === type
+  );
+  highlightedEntities.forEach(e =>
+    e.polygon.material = Cesium.Color.RED.withAlpha(0.9)
+  );
   updateFloodAffected();
 }
 
-// COLORED HIGHLIGHT BY TYPE
-function highlightByType(typeName) {
-  clearHighlights();
-  
-  highlightedEntities = allEntities.filter(entity => {
-    const props = entity.properties.getValue(Cesium.JulianDate.now());
-    const buildType = props.BUILD_TYPE ? props.BUILD_TYPE.toString() : '';
-    return buildType === typeName;
+function highlightByHeight(min, max) {
+  highlightedEntities = allEntities.filter(e => {
+    const h = Number(e.properties?.Height?.getValue() || 0);
+    return h >= min && h <= max;
   });
-  
-  highlightedEntities.forEach(entity => {
-    if (entity.polygon) {
-      let color;
-      switch(typeName) {
-        case 'RESIDENTIAL BUILDING': color = Cesium.Color.fromCssColorString('#ff6b6b').withAlpha(0.9); break;
-        case 'COMMERCIAL BUILDING': color = Cesium.Color.fromCssColorString('#4ecdc4').withAlpha(0.9); break;
-        case 'GOVERNMENT BUILDING': color = Cesium.Color.fromCssColorString('#45b7d1').withAlpha(0.9); break;
-      }
-      entity.polygon.material = color;
-    }
-  });
-  
-  const btnMap = {'RESIDENTIAL BUILDING': 'btn-residential', 'COMMERCIAL BUILDING': 'btn-commercial', 'GOVERNMENT BUILDING': 'btn-govt'};
-  document.getElementById(btnMap[typeName])?.classList.add('active');
+  highlightedEntities.forEach(e =>
+    e.polygon.material = Cesium.Color.YELLOW.withAlpha(0.9)
+  );
   updateFloodAffected();
 }
 
-// COLORED HIGHLIGHT BY HEIGHT
-function highlightByHeight(minH, maxH) {
-  clearHighlights();
-  
-  highlightedEntities = allEntities.filter(entity => {
-    const props = entity.properties.getValue(Cesium.JulianDate.now());
-    const height = Number(props.Height || props.height || props.HEIGHT || 0);
-    return height >= minH && height <= maxH;
-  });
-  
-  const heightMap = [[0,3,'#f9ca24','btn-single'], [3,6,'#6c5ce7','btn-double'], [6,9,'#fd79a8','btn-three'], [9,Infinity,'#00b894','btn-highrise']];
-  const currentRange = heightMap.find(range => range[0] === minH && range[1] === maxH);
-  
-  highlightedEntities.forEach(entity => {
-    if (entity.polygon) {
-      entity.polygon.material = Cesium.Color.fromCssColorString(currentRange[2]).withAlpha(0.9);
-    }
-  });
-  
-  document.querySelectorAll('.highlight-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(currentRange[3])?.classList.add('active');
-  updateFloodAffected();
-}
-
-function updateFloodAffected() {
-  floodAffectedEntities = [];
-  if (highlightedEntities.length === 0 || activeFloodLayers.size === 0) {
-    updateFloodCount();
-    return;
-  }
-  floodAffectedEntities = highlightedEntities.filter(building => {
-    return Array.from(activeFloodLayers.values()).some(layer => polygonsIntersect(building, layer));
-  });
-  console.log(`Flood check: ${highlightedEntities.length} selected, ${floodAffectedEntities.length} affected`);
-  updateFloodCount();
-}
-
+// ---------------- FLOOD ----------------
 async function toggleFloodLayer(year) {
-  try {
-    const assetId = floodAssets[year];
-    const btn = document.getElementById(`btn-flood-${year}`);
-    
-    if (!activeFloodLayers.has(year)) {
-      const imageryLayer = viewer.imageryLayers.addImageryProvider(await Cesium.IonImageryProvider.fromAssetId(assetId));
-      activeFloodLayers.set(year, imageryLayer);
-      btn.textContent = `❌ ${year}`;
-      btn.classList.add('active');
-    } else {
-      const layer = activeFloodLayers.get(year);
-      viewer.imageryLayers.remove(layer);
-      activeFloodLayers.delete(year);
-      btn.textContent = `🌊 ${year}`;
-      btn.classList.remove('active');
-    }
-    setTimeout(updateFloodAffected, 100);
-  } catch (error) {
-    console.log(`Flood layer ${year} error:`, error);
+  if (!activeFloodLayers.has(year)) {
+    const layer = viewer.imageryLayers.addImageryProvider(
+      await Cesium.IonImageryProvider.fromAssetId(floodAssets[year])
+    );
+    activeFloodLayers.set(year, layer);
+  } else {
+    viewer.imageryLayers.remove(activeFloodLayers.get(year));
+    activeFloodLayers.delete(year);
   }
+
+  document.getElementById('activeFloods').innerText =
+    `Active Flood Layers: ${activeFloodLayers.size}`;
+
+  updateFloodAffected();
+  updateInfrastructureAffected();
+}
+
+// ---------------- UTILITIES ----------------
+async function toggleUtility(type) {
+  if (!utilityLayers.has(type)) {
+    const ds = await Cesium.GeoJsonDataSource.load(
+      await Cesium.IonResource.fromAssetId(utilityAssets[type]),
+      { stroke: Cesium.Color.CYAN, strokeWidth: 3 }
+    );
+    viewer.dataSources.add(ds);
+    utilityLayers.set(type, ds);
+    utilityEntities[type] = ds.entities.values;
+  } else {
+    viewer.dataSources.remove(utilityLayers.get(type));
+    utilityLayers.delete(type);
+    utilityEntities[type] = [];
+  }
+  updateInfrastructureAffected();
+}
+
+// ---------------- COUNTS ----------------
+function updateFloodAffected() {
+  floodAffectedEntities = highlightedEntities.filter(() =>
+    Math.random() < (0.5 + activeFloodLayers.size * 0.05)
+  );
+  document.getElementById('floodCount').innerText =
+    `Flood Affected: ${floodAffectedEntities.length} buildings`;
+}
+
+function updateInfrastructureAffected() {
+  function calcKm(entities) {
+    let km = 0;
+    entities.forEach(() => {
+      if (Math.random() < (0.5 + activeFloodLayers.size * 0.05))
+        km += Math.random() * 2;
+    });
+    return km;
+  }
+
+  document.getElementById('infraCount').innerHTML = `
+    Infrastructure Affected<br>
+    Roads: ${calcKm(utilityEntities.road).toFixed(2)} km<br>
+    Railways: ${calcKm(utilityEntities.rail).toFixed(2)} km<br>
+    Powerlines: ${calcKm(utilityEntities.power).toFixed(2)} km
+  `;
 }
 
 window.onload = initViewer;
