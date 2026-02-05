@@ -16,16 +16,18 @@
 /* ================= GLOBAL ================= */
 body {
   font-family: "Times New Roman", Times, serif;
+  margin: 0;
 }
 
 /* ================= LAYOUT ================= */
 
 #topPanel {
   position: absolute;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 110px;
-  background: linear-gradient(145deg, #1e3c72, #2a5298);
+  background: #1e3c72;      /* safe dark blue */
   color: white;
   padding: 18px;
   text-align: center;
@@ -38,7 +40,7 @@ body {
   top: 110px;
   width: 280px;
   height: calc(100vh - 110px);
-  background: linear-gradient(145deg, #1e3c72, #2a5298);
+  background: #1e3c72;      /* safe medium blue */
   color: white;
   padding: 16px;
   z-index: 999;
@@ -63,7 +65,7 @@ body {
 
 #subTitle {
   font-size: 20px;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 #leftPanel h1,
@@ -77,7 +79,7 @@ body {
 .panel-section h3 {
   font-size: 18px;
   margin-bottom: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
   padding-bottom: 4px;
 }
 
@@ -85,10 +87,10 @@ body {
 
 select {
   width: 100%;
-  padding: 11px;
+  padding: 10px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.35);
-  background: #1e5aa8;
+  border: 1px solid #ffffff55;
+  background: #1e5aa8;   /* common blue */
   color: white;
   font-size: 15px;
   cursor: pointer;
@@ -100,7 +102,7 @@ select option {
   color: white;
 }
 
-/* ================= BUTTONS (PROFESSIONAL) ================= */
+/* ================= BUTTONS ================= */
 
 .panel-section {
   margin-bottom: 14px;
@@ -115,13 +117,12 @@ select option {
 /* Utility buttons */
 .highlight-btn {
   background: #1e5aa8;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid #ffffff55;
   color: white;
   padding: 12px;
   border-radius: 6px;
   font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .highlight-btn:hover {
@@ -130,15 +131,14 @@ select option {
 
 /* Flood buttons */
 .flood-btn {
-  background: #0b7285;
-  border: 1px solid rgba(255,255,255,0.3);
+  background: #0b7285;    /* safe teal */
+  border: 1px solid #ffffff55;
   color: white;
   padding: 14px;
   border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .flood-btn:hover {
@@ -148,14 +148,14 @@ select option {
 /* Active state */
 .active {
   background: #083f5c !important;
-  border-color: rgba(255,255,255,0.6) !important;
+  border-color: white !important;
 }
 
 /* ================= AFFECTED PANELS ================= */
 
 #floodCount,
 #infraCount {
-  background: linear-gradient(145deg, #b71c1c, #8e0000);
+  background: #b71c1c;   /* standard red */
   color: white;
   border-radius: 6px;
   padding: 10px;
@@ -164,7 +164,7 @@ select option {
 }
 
 #activeFloods {
-  background: rgba(0,0,0,0.35);
+  background: #333333;   /* neutral dark gray */
   border-radius: 6px;
   padding: 10px;
   font-size: 14px;
@@ -176,16 +176,16 @@ select option {
 #devPanel {
   margin-top: 14px;
   padding: 12px;
-  background: #0047AB;
+  background: #0d47a1;   /* standard deep blue */
   border-radius: 6px;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 #devPanel h3 {
   margin: 0 0 6px;
-  font-size: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.4);
+  font-size: 16px;
+  border-bottom: 1px solid #1e3c72;
   padding-bottom: 4px;
 }
 </style>
