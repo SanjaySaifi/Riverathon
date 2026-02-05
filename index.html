@@ -21,17 +21,33 @@ body {
 
 /* ================= LAYOUT ================= */
 
+/* ================= TOP PANEL ================= */
+
 #topPanel {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 0; top: 0;
   width: 100%;
   height: 110px;
-  background: #1e3c72;      /* safe dark blue */
+  background: linear-gradient(145deg, #1e3c72, #2a5298);
   color: white;
   padding: 18px;
-  text-align: center;
   z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo on left */
+#topLogo {
+  position: absolute;
+  left: 20px;
+  height: 70px;
+}
+
+#topLogo img {
+  height: 100%;
+  width: auto;
 }
 
 #leftPanel,
@@ -192,8 +208,18 @@ select option {
 
 <!-- ================= TOP PANEL ================= -->
 <div id="topPanel">
-  <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</div>
-  <div id="subTitle">Riverathon 1.0</div>
+
+  <!-- Left logo -->
+  <div id="topLogo">
+    <img src="logo.png" alt="Geo-Sankalp Logo">
+  </div>
+
+  <!-- Center title -->
+  <div>
+    <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</div>
+    <div id="subTitle">Riverathon 1.0</div>
+  </div>
+
 </div>
 
 <!-- ================= LEFT PANEL ================= -->
@@ -270,4 +296,5 @@ select option {
 <script src="flood-viewer.js"></script>
 </body>
 </html>
+
 
