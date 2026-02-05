@@ -75,7 +75,7 @@ body {
 }
 
 .panel-section h3 {
-  font-size: 19px;
+  font-size: 18px;
   margin-bottom: 6px;
   border-bottom: 1px solid rgba(255,255,255,0.3);
   padding-bottom: 4px;
@@ -85,28 +85,22 @@ body {
 
 select {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(45deg, #2196f3, #1976d2);
+  padding: 11px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: #1e5aa8;
   color: white;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15px;
   cursor: pointer;
   appearance: none;
 }
 
-select:focus {
-  outline: 2px solid rgba(255,255,255,0.7);
-}
-
 select option {
-  background-color: #1976d2;
+  background: #1e5aa8;
   color: white;
-  font-size: 15px;
 }
 
-/* ================= BUTTONS ================= */
+/* ================= BUTTONS (PROFESSIONAL) ================= */
 
 .panel-section {
   margin-bottom: 14px;
@@ -115,97 +109,99 @@ select option {
 .btn-group {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Utility & General Buttons */
+/* Utility buttons */
 .highlight-btn {
-  background: linear-gradient(45deg, #2196f3, #1976d2);
-  border: none;
+  background: #1e5aa8;
+  border: 1px solid rgba(255,255,255,0.25);
   color: white;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 15px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease;
 }
 
 .highlight-btn:hover {
-  background: linear-gradient(45deg, #42a5f5, #1e88e5);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  background: #174a8b;
 }
 
-/* Flood Buttons */
+/* Flood buttons */
 .flood-btn {
-  background: linear-gradient(45deg, #00bcd4, #0097a7);
-  border: none;
+  background: #0b7285;
+  border: 1px solid rgba(255,255,255,0.3);
   color: white;
-  padding: 22px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease;
 }
 
 .flood-btn:hover {
-  background: linear-gradient(45deg, #26c6da, #00acc1);
-  transform: scale(1.03);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  background: #095c6b;
 }
 
+/* Active state */
 .active {
-  box-shadow: 0 0 14px rgba(0,255,255,0.8);
-  outline: 2px solid rgba(255,255,255,0.8);
+  background: #083f5c !important;
+  border-color: rgba(255,255,255,0.6) !important;
 }
 
 /* ================= AFFECTED PANELS ================= */
 
-#floodCount {
-  background: linear-gradient(145deg, #c62828, #b71c1c);
-  color: white;
-  box-shadow: 0 0 14px rgba(255,0,0,0.6);
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 17px;
-}
-
+#floodCount,
 #infraCount {
-  background: linear-gradient(145deg, #d32f2f, #c62828);
+  background: linear-gradient(145deg, #b71c1c, #8e0000);
   color: white;
-  box-shadow: 0 0 14px rgba(255,0,0,0.6);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 10px;
-  font-size: 17px;
+  font-size: 16px;
   margin-top: 10px;
 }
 
 #activeFloods {
   background: rgba(0,0,0,0.35);
-  border-radius: 14px;
+  border-radius: 6px;
   padding: 10px;
-  font-size: 15px;
+  font-size: 14px;
   margin-top: 10px;
 }
 
+/* ================= DEVELOPED BY PANEL ================= */
 
+#devPanel {
+  margin-top: 14px;
+  padding: 12px;
+  background: #0047AB;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+}
 
+#devPanel h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 4px;
+}
 </style>
 
 <!-- ================= TOP PANEL ================= -->
 <div id="topPanel">
-  <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment
-</div>
+  <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</div>
   <div id="subTitle">Riverathon 1.0</div>
 </div>
 
 <!-- ================= LEFT PANEL ================= -->
 <div id="leftPanel">
-  <h1>🏠 Building Analysis</h1>
+  <h1>Building Analysis</h1>
 
   <div class="panel-section">
-    <h3>📍 Building Type</h3>
+    <h3>Building Type</h3>
     <select id="select-building-type">
       <option value="">Select Building Type</option>
       <option value="RESIDENTIAL BUILDING">Residential</option>
@@ -215,22 +211,22 @@ select option {
   </div>
 
   <div class="panel-section">
-    <h3>📏 Building Height</h3>
+    <h3>Building Height</h3>
     <select id="select-building-height">
       <option value="">Select Height Range</option>
-      <option value="0-3">0–3 m (Single Storey)</option>
-      <option value="3-6">3–6 m (Double Storey)</option>
-      <option value="6-9">6–9 m (Triple Storey)</option>
-      <option value="9-inf">&gt; 9 m (High Rise)</option>
+      <option value="0-3">0–3 m</option>
+      <option value="3-6">3–6 m</option>
+      <option value="6-9">6–9 m</option>
+      <option value="9-inf">&gt; 9 m</option>
     </select>
   </div>
 
   <div class="panel-section">
-    <h3>🛠 Utilities</h3>
+    <h3>Utilities</h3>
     <div class="btn-group">
-      <button id="btn-road" class="highlight-btn">🛣 Roads</button>
-      <button id="btn-rail" class="highlight-btn">🚆 Railways</button>
-      <button id="btn-power" class="highlight-btn">⚡ Powerlines</button>
+      <button id="btn-road" class="highlight-btn">Roads</button>
+      <button id="btn-rail" class="highlight-btn">Railways</button>
+      <button id="btn-power" class="highlight-btn">Powerlines</button>
     </div>
   </div>
 
@@ -246,19 +242,27 @@ select option {
 
 <!-- ================= RIGHT PANEL ================= -->
 <div id="rightPanel">
-  <h1>🌊 Flood Years</h1>
+  <h1>Flood Years</h1>
 
   <div class="panel-section">
     <div class="btn-group">
-      <button id="btn-flood-2008" class="flood-btn">🌊 2008 Flood</button>
-      <button id="btn-flood-2016" class="flood-btn">🌊 2016 Flood</button>
-      <button id="btn-flood-2017" class="flood-btn">🌊 2017 Flood</button>
-      <button id="btn-flood-2018" class="flood-btn">🌊 2018 Flood</button>
-      <button id="btn-flood-2020" class="flood-btn">🌊 2020 Flood</button>
+      <button id="btn-flood-2008" class="flood-btn">2008 Flood</button>
+      <button id="btn-flood-2016" class="flood-btn">2016 Flood</button>
+      <button id="btn-flood-2017" class="flood-btn">2017 Flood</button>
+      <button id="btn-flood-2018" class="flood-btn">2018 Flood</button>
+      <button id="btn-flood-2020" class="flood-btn">2020 Flood</button>
     </div>
   </div>
 
   <div id="activeFloods">Active Flood Layers: 0</div>
+
+  <div id="devPanel">
+    <h3>Developed by</h3>
+    <strong>Team Geo-Sankalp</strong><br>
+    Sanjay Saifi<br>
+    Madhavan S<br>
+    Elevarsan
+  </div>
 </div>
 
 <div id="cesiumContainer"></div>
