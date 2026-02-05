@@ -1,89 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</title>
+
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 </head>
+
 <body>
+
 <style>
-  @import url(../templates/bucket.css);
-  
-  /* ALL ORIGINAL STYLES + NEW COLORS */
-  #topPanel { position: absolute; left: 0; top: 0; width: 100%; height: 120px; background: linear-gradient(145deg, #1e3c72, #2a5298); color: white; padding: 25px; box-sizing: border-box; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.4); text-align: center; }
-  #mainTitle { font-size: 28px; font-weight: bold; margin: 0 0 5px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.6); letter-spacing: 1px; }
-  #subTitle { font-size: 18px; margin: 0; opacity: 0.9; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-  
-  #leftPanel { position: absolute; left: 0; top: 120px; width: 280px; height: calc(100vh - 120px); background: linear-gradient(145deg, #1e3c72, #2a5298); color: white; padding: 25px; box-sizing: border-box; overflow-y: auto; z-index: 999; box-shadow: 3px 0 15px rgba(0,0,0,0.4); }
-  #rightPanel { position: absolute; right: 0; top: 120px; width: 280px; height: calc(100vh - 120px); background: linear-gradient(145deg, #1e3c72, #2a5298); color: white; padding: 25px; box-sizing: border-box; overflow-y: auto; z-index: 999; box-shadow: -3px 0 15px rgba(0,0,0,0.4); }
-  
-  #leftPanel h1, #rightPanel h1 { margin: 0 0 30px; font-size: 22px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-  .panel-section { margin-bottom: 25px; }
-  .panel-section h3 { margin: 0 0 15px; font-size: 16px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 8px; }
-  .btn-group { display: flex; flex-direction: column; gap: 8px; }
-  
-  .highlight-btn, .flood-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; backdrop-filter: blur(10px); }
-  .highlight-btn:hover, .flood-btn:hover { background: rgba(255,255,255,0.25); transform: translateX(5px); }
-  
-  /* NEW COLOR CLASSES FOR BUTTONS */
-  .residential-btn.active { background: linear-gradient(45deg, #ff6b6b, #ee5a52) !important; box-shadow: 0 0 20px rgba(255,107,107,0.5) !important; border-color: #ff6b6b !important; }
-  .commercial-btn.active { background: linear-gradient(45deg, #4ecdc4, #44a08d) !important; box-shadow: 0 0 20px rgba(78,205,196,0.5) !important; border-color: #4ecdc4 !important; }
-  .govt-btn.active { background: linear-gradient(45deg, #45b7d1, #96c93d) !important; box-shadow: 0 0 20px rgba(69,183,209,0.5) !important; border-color: #45b7d1 !important; }
-  .single-storey-btn.active { background: linear-gradient(45deg, #f9ca24, #f0932b) !important; box-shadow: 0 0 20px rgba(249,202,36,0.5) !important; border-color: #f9ca24 !important; }
-  .double-storey-btn.active { background: linear-gradient(45deg, #6c5ce7, #a29bfe) !important; box-shadow: 0 0 20px rgba(108,92,231,0.5) !important; border-color: #6c5ce7 !important; }
-  .three-storey-btn.active { background: linear-gradient(45deg, #fd79a8, #e84393) !important; box-shadow: 0 0 20px rgba(253,121,168,0.5) !important; border-color: #fd79a8 !important; }
-  .highrise-btn.active { background: linear-gradient(45deg, #00b894, #00a085) !important; box-shadow: 0 0 20px rgba(0,184,148,0.5) !important; border-color: #00b894 !important; }
-  
-  .flood-btn.active { background: linear-gradient(45deg, #00d4ff, #0099cc); box-shadow: 0 0 20px rgba(0,212,255,0.5); border-color: #00d4ff; }
-  #floodCount, #activeFloods { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; text-align: center; font-size: 18px; font-weight: bold; margin-top: 20px; border: 2px solid rgba(255,255,255,0.2); }
-  #floodCount { background: linear-gradient(145deg, #ff4444, #cc0000); border-color: #ff6666; color: #fff; margin-top: 10px; }
-  #cesiumContainer { margin-left: 280px; margin-right: 280px; margin-top: 120px; height: calc(100vh - 120px); }
-  #loadingOverlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 40px; border-radius: 12px; z-index: 1001; display: none; }
+@import url(../templates/bucket.css);
+
+/* ================= GLOBAL ================= */
+body {
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* ================= LAYOUT ================= */
+
+#topPanel {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 110px;
+  background: linear-gradient(145deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 18px;
+  text-align: center;
+  z-index: 1000;
+}
+
+#leftPanel,
+#rightPanel {
+  position: absolute;
+  top: 110px;
+  width: 280px;
+  height: calc(100vh - 110px);
+  background: linear-gradient(145deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 16px;
+  z-index: 999;
+}
+
+#leftPanel { left: 0; overflow: hidden; }
+#rightPanel { right: 0; }
+
+#cesiumContainer {
+  margin-left: 280px;
+  margin-right: 280px;
+  margin-top: 110px;
+  height: calc(100vh - 110px);
+}
+
+/* ================= TYPOGRAPHY ================= */
+
+#mainTitle {
+  font-size: 34px;
+  font-weight: bold;
+}
+
+#subTitle {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+#leftPanel h1,
+#rightPanel h1 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.panel-section h3 {
+  font-size: 19px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding-bottom: 4px;
+}
+
+/* ================= DROPDOWNS ================= */
+
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 18px;
+  border: none;
+  background: linear-gradient(45deg, #2196f3, #1976d2);
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+}
+
+select:focus {
+  outline: 2px solid rgba(255,255,255,0.7);
+}
+
+select option {
+  background-color: #1976d2;
+  color: white;
+  font-size: 15px;
+}
+
+/* ================= BUTTONS ================= */
+
+.panel-section {
+  margin-bottom: 14px;
+}
+
+.btn-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+/* Utility & General Buttons */
+.highlight-btn {
+  background: linear-gradient(45deg, #2196f3, #1976d2);
+  border: none;
+  color: white;
+  padding: 15px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.highlight-btn:hover {
+  background: linear-gradient(45deg, #42a5f5, #1e88e5);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Flood Buttons */
+.flood-btn {
+  background: linear-gradient(45deg, #00bcd4, #0097a7);
+  border: none;
+  color: white;
+  padding: 22px;
+  border-radius: 28px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.flood-btn:hover {
+  background: linear-gradient(45deg, #26c6da, #00acc1);
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.active {
+  box-shadow: 0 0 14px rgba(0,255,255,0.8);
+  outline: 2px solid rgba(255,255,255,0.8);
+}
+
+/* ================= AFFECTED PANELS ================= */
+
+#floodCount {
+  background: linear-gradient(145deg, #c62828, #b71c1c);
+  color: white;
+  box-shadow: 0 0 14px rgba(255,0,0,0.6);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 17px;
+}
+
+#infraCount {
+  background: linear-gradient(145deg, #d32f2f, #c62828);
+  color: white;
+  box-shadow: 0 0 14px rgba(255,0,0,0.6);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 17px;
+  margin-top: 10px;
+}
+
+#activeFloods {
+  background: rgba(0,0,0,0.35);
+  border-radius: 14px;
+  padding: 10px;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+
+
 </style>
 
+<!-- ================= TOP PANEL ================= -->
 <div id="topPanel">
-  <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</div>
-  <div id="subTitle">Riverathon1.0</div>
+  <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment
+</div>
+  <div id="subTitle">Riverathon 1.0</div>
 </div>
 
+<!-- ================= LEFT PANEL ================= -->
 <div id="leftPanel">
   <h1>🏠 Building Analysis</h1>
+
   <div class="panel-section">
-    <h3>📍 Highlight Building Type</h3>
+    <h3>📍 Building Type</h3>
+    <select id="select-building-type">
+      <option value="">Select Building Type</option>
+      <option value="RESIDENTIAL BUILDING">Residential</option>
+      <option value="COMMERCIAL BUILDING">Commercial</option>
+      <option value="GOVERNMENT BUILDING">Government</option>
+    </select>
+  </div>
+
+  <div class="panel-section">
+    <h3>📏 Building Height</h3>
+    <select id="select-building-height">
+      <option value="">Select Height Range</option>
+      <option value="0-3">0–3 m (Single Storey)</option>
+      <option value="3-6">3–6 m (Double Storey)</option>
+      <option value="6-9">6–9 m (Triple Storey)</option>
+      <option value="9-inf">&gt; 9 m (High Rise)</option>
+    </select>
+  </div>
+
+  <div class="panel-section">
+    <h3>🛠 Utilities</h3>
     <div class="btn-group">
-      <button id="btn-residential" class="highlight-btn residential-btn">🏘️ Residential</button>
-      <button id="btn-commercial" class="highlight-btn commercial-btn">🏢 Commercial</button>
-      <button id="btn-govt" class="highlight-btn govt-btn">🏛️ Government</button>
+      <button id="btn-road" class="highlight-btn">🛣 Roads</button>
+      <button id="btn-rail" class="highlight-btn">🚆 Railways</button>
+      <button id="btn-power" class="highlight-btn">⚡ Powerlines</button>
     </div>
   </div>
-  <div class="panel-section">
-    <h3>📏 Highlight Building Height</h3>
-    <div class="btn-group">
-      <button id="btn-single" class="highlight-btn single-storey-btn">🏠 Single Storey (0-3m)</button>
-      <button id="btn-double" class="highlight-btn double-storey-btn">🏛️ Double Storey (3-6m)</button>
-      <button id="btn-three" class="highlight-btn three-storey-btn">🏢 Three Storey (6-9m)</button>
-      <button id="btn-highrise" class="highlight-btn highrise-btn">🏙️ High Rise (>9m)</button>
-    </div>
-  </div>
+
   <div id="floodCount">Flood Affected: 0 buildings</div>
+
+  <div id="infraCount">
+    Infrastructure Affected<br>
+    Roads: 0 km<br>
+    Railways: 0 km<br>
+    Powerlines: 0 km
+  </div>
 </div>
 
+<!-- ================= RIGHT PANEL ================= -->
 <div id="rightPanel">
   <h1>🌊 Flood Years</h1>
+
   <div class="panel-section">
-    <h3>💧 Toggle Flood Layers</h3>
     <div class="btn-group">
-      <button id="btn-flood-2008" class="flood-btn">🌊 2008</button>
-      <button id="btn-flood-2016" class="flood-btn">🌊 2016</button>
-      <button id="btn-flood-2017" class="flood-btn">🌊 2017</button>
-      <button id="btn-flood-2018" class="flood-btn">🌊 2018</button>
-      <button id="btn-flood-2020" class="flood-btn">🌊 2020</button>
+      <button id="btn-flood-2008" class="flood-btn">🌊 2008 Flood</button>
+      <button id="btn-flood-2016" class="flood-btn">🌊 2016 Flood</button>
+      <button id="btn-flood-2017" class="flood-btn">🌊 2017 Flood</button>
+      <button id="btn-flood-2018" class="flood-btn">🌊 2018 Flood</button>
+      <button id="btn-flood-2020" class="flood-btn">🌊 2020 Flood</button>
     </div>
   </div>
-  <div id="activeFloods">Active: 0 flood layers</div>
+
+  <div id="activeFloods">Active Flood Layers: 0</div>
 </div>
 
-<div id="cesiumContainer" class="fullSize"></div>
-<div id="loadingOverlay"><h1>Loading 3D Buildings...</h1></div>
+<div id="cesiumContainer"></div>
 
 <script src="flood-viewer.js"></script>
 </body>
