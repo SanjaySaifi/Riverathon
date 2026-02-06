@@ -185,15 +185,20 @@ function updateInfrastructureAffected() {
 window.onload = initViewer;
 
 // ---------------- MOBILE PANEL TOGGLES ----------------
-document.getElementById("toggleLeft").onclick = () => {
-  document.getElementById("leftPanel").classList.toggle("panel-open");
-  document.getElementById("rightPanel").classList.remove("panel-open");
-};
+const toggleLeftBtn  = document.getElementById("toggleLeft");
+const toggleRightBtn = document.getElementById("toggleRight");
 
-document.getElementById("toggleRight").onclick = () => {
-  document.getElementById("rightPanel").classList.toggle("panel-open");
-  document.getElementById("leftPanel").classList.remove("panel-open");
-};
+if (toggleLeftBtn && toggleRightBtn) {
+  toggleLeftBtn.onclick = () => {
+    leftPanel.classList.toggle("panel-open");
+    rightPanel.classList.remove("panel-open");
+  };
+
+  toggleRightBtn.onclick = () => {
+    rightPanel.classList.toggle("panel-open");
+    leftPanel.classList.remove("panel-open");
+  };
+}
 
 
 
