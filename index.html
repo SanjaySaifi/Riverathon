@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</title>
 
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
@@ -235,40 +236,34 @@ select option {
   padding-bottom: 4px;
 }
   /* ---------- TOP PANEL MOBILE FIX ---------- */
+/* ================= MOBILE HARD OVERRIDE ================= */
 @media (max-width: 768px) {
 
-  /* Reflow top panel */
-  #topPanel {
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    gap: 8px;
+  /* FORCE hide panels */
+  body #leftPanel,
+  body #rightPanel {
+    display: none !important;
+    width: 100% !important;
+    height: auto !important;
+    position: absolute !important;
+    top: 110px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2000 !important;
   }
 
-  /* Disable absolute positioning of logos */
-  #topLogo,
-  #topLogoRight {
-    position: static;
-    left: auto;
-    right: auto;
+  /* Show only when toggled */
+  body #leftPanel.panel-open,
+  body #rightPanel.panel-open {
+    display: block !important;
   }
 
-  /* Resize logos for mobile */
-  #topLogo img,
-  #topLogoRight img {
-    height: 55px;   /* mobile-safe */
-    width: auto;
-  }
-
-  /* Center title text */
-  #mainTitle {
-    text-align: center;
-    font-size: 18px;
-  }
-
-  #subTitle {
-    text-align: center;
-    font-size: 13px;
+  /* Fullscreen map */
+  body #cesiumContainer {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 110px !important;
+    height: calc(100vh - 110px) !important;
   }
 }
 </style>
@@ -374,6 +369,7 @@ select option {
 <script src="flood-viewer.js"></script>
 </body>
 </html>
+
 
 
 
