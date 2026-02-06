@@ -184,5 +184,16 @@ function updateInfrastructureAffected() {
 
 window.onload = initViewer;
 
+// ---------------- MOBILE PANEL TOGGLES ----------------
+document.getElementById("toggleLeft").onclick = () => {
+  document.getElementById("leftPanel").classList.toggle("panel-open");
+  document.getElementById("rightPanel").classList.remove("panel-open");
+};
+
+document.getElementById("toggleRight").onclick = () => {
+  document.getElementById("rightPanel").classList.toggle("panel-open");
+  document.getElementById("leftPanel").classList.remove("panel-open");
+};
+
 
 
