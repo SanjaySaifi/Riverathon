@@ -234,6 +234,43 @@ select option {
   border-bottom: 1px solid #1e3c72;
   padding-bottom: 4px;
 }
+  /* ---------- TOP PANEL MOBILE FIX ---------- */
+@media (max-width: 768px) {
+
+  /* Reflow top panel */
+  #topPanel {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    gap: 8px;
+  }
+
+  /* Disable absolute positioning of logos */
+  #topLogo,
+  #topLogoRight {
+    position: static;
+    left: auto;
+    right: auto;
+  }
+
+  /* Resize logos for mobile */
+  #topLogo img,
+  #topLogoRight img {
+    height: 55px;   /* mobile-safe */
+    width: auto;
+  }
+
+  /* Center title text */
+  #mainTitle {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  #subTitle {
+    text-align: center;
+    font-size: 13px;
+  }
+}
 </style>
 
 <!-- ================= TOP PANEL ================= -->
@@ -243,7 +280,9 @@ select option {
   <div id="topLogo">
     <img src="logo.png" alt="Geo-Sankalp Logo">
   </div>
-
+<!-- Mobile panel toggles -->
+<button id="toggleLeft" class="mobile-toggle">☰ Analysis</button>
+<button id="toggleRight" class="mobile-toggle">☰ Floods</button>
   <!-- Center title -->
   <div>
     <div id="mainTitle">Geo-Sankalp: 3D Web-Portal for Building-level Flood Risk Assessment</div>
@@ -335,6 +374,7 @@ select option {
 <script src="flood-viewer.js"></script>
 </body>
 </html>
+
 
 
 
