@@ -194,6 +194,11 @@ select option {
   display: block;
   opacity: 0.9;
 }
+
+  /* Hide mobile toggle buttons on desktop */
+.mobile-toggle {
+  display: none;
+}
 /* ================= AFFECTED PANELS ================= */
 
 #floodCount,
@@ -264,6 +269,9 @@ select option {
     margin-right: 0 !important;
     margin-top: 110px !important;
     height: calc(100vh - 110px) !important;
+  }
+  .mobile-toggle {
+    display: inline-block;
   }
 }
 </style>
@@ -369,6 +377,7 @@ select option {
 <script src="flood-viewer.js"></script>
 </body>
 </html>
+
 
 
 
