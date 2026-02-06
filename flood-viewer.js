@@ -111,14 +111,18 @@ function highlightByHeight(min, max) {
 
 // ---------------- FLOOD ----------------
 async function toggleFloodLayer(year) {
+  const btn = document.getElementById(`btn-flood-${year}`);
+
   if (!activeFloodLayers.has(year)) {
     const layer = viewer.imageryLayers.addImageryProvider(
       await Cesium.IonImageryProvider.fromAssetId(floodAssets[year])
     );
     activeFloodLayers.set(year, layer);
+    btn.classList.add("active");   // ✅ ON
   } else {
     viewer.imageryLayers.remove(activeFloodLayers.get(year));
     activeFloodLayers.delete(year);
+    btn.classList.remove("active"); // ❌ OFF
   }
 
   document.getElementById('activeFloods').innerText =
@@ -130,6 +134,8 @@ async function toggleFloodLayer(year) {
 
 // ---------------- UTILITIES ----------------
 async function toggleUtility(type) {
+  const btn = document.getElementById(`btn-${type}`);
+
   if (!utilityLayers.has(type)) {
     const ds = await Cesium.GeoJsonDataSource.load(
       await Cesium.IonResource.fromAssetId(utilityAssets[type]),
@@ -138,11 +144,14 @@ async function toggleUtility(type) {
     viewer.dataSources.add(ds);
     utilityLayers.set(type, ds);
     utilityEntities[type] = ds.entities.values;
+    btn.classList.add("active");   // ✅ ON
   } else {
     viewer.dataSources.remove(utilityLayers.get(type));
     utilityLayers.delete(type);
     utilityEntities[type] = [];
+    btn.classList.remove("active"); // ❌ OFF
   }
+
   updateInfrastructureAffected();
 }
 
@@ -174,3 +183,4 @@ function updateInfrastructureAffected() {
 }
 
 window.onload = initViewer;
+
