@@ -240,6 +240,12 @@ select option {
   border-bottom: 1px solid #1e3c72;
   padding-bottom: 4px;
 }
+
+  /* ================= DESKTOP DEFAULT ================= */
+#leftPanel,
+#rightPanel {
+  display: block;
+}
   /* ---------- TOP PANEL MOBILE FIX ---------- */
 /* ================= MOBILE HARD OVERRIDE ================= */
 @media (max-width: 768px) {
@@ -257,6 +263,30 @@ select option {
 
   #subTitle {
     font-size: 14px;
+  }
+  /* Hide panels by default on mobile */
+  #leftPanel,
+  #rightPanel {
+    display: none;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 110px;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+  }
+
+  /* Show panel when toggled */
+  #leftPanel.panel-open,
+  #rightPanel.panel-open {
+    display: block;
+  }
+
+  /* Full-width map */
+  #cesiumContainer {
+    margin-left: 0;
+    margin-right: 0;
   }
 
 }
@@ -394,6 +424,7 @@ select option {
 <script src="flood-viewer.js"></script>
 </body>
 </html>
+
 
 
 
