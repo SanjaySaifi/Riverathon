@@ -188,17 +188,8 @@ window.onload = initViewer;
 const toggleLeftBtn  = document.getElementById("toggleLeft");
 const toggleRightBtn = document.getElementById("toggleRight");
 
-if (toggleLeftBtn && toggleRightBtn) {
-  toggleLeftBtn.onclick = () => {
-    leftPanel.classList.toggle("panel-open");
-    rightPanel.classList.remove("panel-open");
-  };
 
-  toggleRightBtn.onclick = () => {
-    rightPanel.classList.toggle("panel-open");
-    leftPanel.classList.remove("panel-open");
-  };
-}
+
 
 
 
